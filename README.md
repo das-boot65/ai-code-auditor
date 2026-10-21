@@ -1,16 +1,39 @@
-# React + Vite
+# Nexara
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Nexara is a browser-based code playground with a real static-analysis API for JavaScript and Python.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Install the frontend dependencies:
 
-## React Compiler
+```sh
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Create and install the Python API environment on Windows:
 
-## Expanding the ESLint configuration
+```powershell
+py -3 -m venv backend\.venv
+backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Start the API and Vite in separate terminals:
+
+```powershell
+npm run dev:api
+npm run dev
+```
+
+Vite proxies `/api` to the local FastAPI service at `127.0.0.1:8000`. Open the URL printed by Vite.
+
+## What the checks do
+
+- JavaScript is checked by ESLint using `backend/eslint.config.js`.
+- Python is checked by Ruff.
+- The API accepts at most 50 KB of source and stops a check after 10 seconds.
+- Other playground languages can still be executed, but do not have a static analyzer configured here.
+- This is static linting, not AI review or a security audit. The API does not execute submitted code.
+
+JavaScript execution uses a browser Web Worker and is not a security sandbox. Other compiled languages are sent to Wandbox when Run is pressed. Do not submit secrets.
+
+For deployment, serve the frontend and route `/api` to the FastAPI service through the same-origin reverse proxy. The Vite proxy is for local development only.
